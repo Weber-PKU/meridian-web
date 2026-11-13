@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meridian · Device preview</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #e9ebf0;
+        --bar: rgb(255 255 255 / 0.8);
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --chip: rgb(0 0 0 / 0.06);
+        --accent: #007aff;
+        --bezel: #1c1c1e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121316;
+          --bar: rgb(30 30 34 / 0.85);
+          --text: #f5f5f7;
+          --muted: #98989d;
+          --chip: rgb(255 255 255 / 0.08);
+          --bezel: #3a3a3c;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font: 13px "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        background: var(--bar);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--chip);
+      }
+      .bar strong {
+        margin-right: 8px;
+        font-size: 14px;
+      }
+      button {
+        height: 28px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 14px;
+        background: var(--chip);
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      button.on {
+        background: var(--accent);
+        color: #fff;
+      }
+      .sep {
+        width: 1px;
+        height: 20px;
+        margin: 0 4px;
+        background: var(--chip);
+      }
+      .info {
+        margin-left: auto;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .stage {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .device {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-origin: center center;
+        border-radius: 44px;
+        padding: 12px;
+        background: var(--bezel);
+        box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.45);
+      }
+      .device.flat {
+        border-radius: 12px;
+        padding: 0;
+        overflow: hidden;
+      }
+      iframe {
+        display: block;
+        border: 0;
+        border-radius: 32px;
+        background: #fff;
+      }
+      .device.flat iframe {
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <strong>Device preview</strong>
+      <span id="presets"></span>
+      <span class="sep"></span>
+      <button id="rotate" title="Rotate">⟲ Rotate</button>
+      <button id="reload" title="Reload the app">↻ Reload</button>
+      <span class="info" id="info"></span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="device" id="device"><iframe id="frame" src="./" title="Meridian"></iframe></div>
+    </div>
+    <script>
+      // Viewport sizes in CSS px. All frames share this browser's storage, like one device would.
+      const PRESETS = [
+        ["iPhone SE", 375, 667],
+        ["iPhone 15", 393, 852],
+        ["iPhone 15 Pro Max", 430, 932],
+        ["Pixel 8", 412, 915],
+        ["Galaxy S24", 360, 780],
+        ["iPad mini", 744, 1133],
+        ["iPad Air", 820, 1180],
+        ["Laptop", 1280, 800, true],
+      ];
+      const $ = (id) => document.getElementById(id);
+      let current = Number(localStorage.getItem("meridian-preview-device") ?? 1);
+      let landscape = localStorage.getItem("meridian-preview-landscape") === "1";
+
+      function layout() {
+        const [name, w0, h0, flat] = PRESETS[current] ?? PRESETS[1];
+        const [w, h] = landscape ? [h0, w0] : [w0, h0];
+        const frame = $("frame");
+        const device = $("device");
+        frame.style.width = `${w}px`;
+        frame.style.height = `${h}px`;
+        device.classList.toggle("flat", !!flat);
+        const pad = flat ? 0 : 24;
+        const stage = $("stage").getBoundingClientRect();
+        const k = Math.min(1, (stage.width - 40) / (w + pad), (stage.height - 40) / (h + pad));
+        device.style.transform = `translate(-50%, -50%) scale(${k})`;
+        $("info").textContent = `${name} · ${w}×${h}${k < 1 ? ` · shown at ${Math.round(k * 100)}%` : ""}`;
+        document.querySelectorAll("#presets button").forEach((b, i) => b.classList.toggle("on", i === current));
+      }
+
+      PRESETS.forEach(([name], i) => {
+        const b = document.createElement("button");
+        b.textContent = name;
+        b.onclick = () => {
+          current = i;
+          localStorage.setItem("meridian-preview-device", String(i));
+          layout();
+        };
+        $("presets").append(b, " ");
+      });
+      $("rotate").onclick = () => {
+        landscape = !landscape;
+        localStorage.setItem("meridian-preview-landscape", landscape ? "1" : "0");
+        layout();
+      };
+      $("reload").onclick = () => $("frame").contentWindow.location.reload();
+      addEventListener("resize", layout);
+      layout();
+    </script>
+  </body>
+</html>
