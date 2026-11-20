@@ -1,0 +1,13 @@
+{
+  "version": "0.10.7",
+  "exe": "Meridian.exe",
+  "sha256": "2baf98e4c6b03749812ea049cbb75719cc77788b4a7da4dabd822d0727844516",
+  "signature": "891788e19223195658ea3b2728a90e5b9b162e9f7398aaede8b66d35da7c4d9c2295f1cfee42fa17af8960ab59e04f53fac0b9ea677e55916783fef4602c0a06",
+  "size": 5975552,
+  "notes": [
+    "News: the calendar button next to Done shows a row of dates that jumps to any day; each day's date stays in view as you scroll.",
+    "News: Done in a story or in Saved goes back one step instead of closing News.",
+    "News: coming back from Saved keeps your place in the list.",
+    "News: Unverified is shown on the opened story only, not on its card."
+  ]
+}

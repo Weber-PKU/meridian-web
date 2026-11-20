@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="face">
+      <circle cx="512" cy="512" r="370"/>
+    </clipPath>
+  </defs>
+  <!-- background squircle -->
+  <rect x="56" y="56" width="912" height="912" rx="212" fill="#FFFFFF"/>
+  <!-- day / night face split by the meridian -->
+  <g clip-path="url(#face)">
+    <rect x="142" y="142" width="370" height="740" fill="#FF9F0A"/>
+    <rect x="512" y="142" width="370" height="740" fill="#1F2A5C"/>
+  </g>
+  <!-- stars -->
+  <circle cx="665" cy="390" r="33" fill="#FFFFFF"/>
+  <circle cx="739" cy="578" r="21" fill="#FFFFFF"/>
+</svg>
